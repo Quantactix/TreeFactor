@@ -1,0 +1,12 @@
+Package: TreeFactor
+Type: Package
+Title: Asset Pricing with Panel Trees
+Version: 1.0
+Date: 2022-02-09
+Author: Jingyu He
+Maintainer: Jingyu He <jingyuhe@cityu.edu.hk>
+Description: Asset Pricing with Panel Trees under Global Split Criteria
+License: Apache License (== 2.0)
+Imports: Rcpp (>= 0.12.13) 
+LinkingTo: Rcpp, RcppArmadillo
+NeedsCompilation: yes
