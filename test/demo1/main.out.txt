@@ -1,0 +1,67 @@
+During startup - Warning messages:
+1: Setting LC_COLLATE failed, using "C" 
+2: Setting LC_TIME failed, using "C" 
+3: Setting LC_MESSAGES failed, using "C" 
+4: Setting LC_MONETARY failed, using "C" 
+ [1] "xret" "id"   "date" "mkt"  "m1"   "m2"   "c1"   "c2"   "c3"   "c4"  
+[11] "c5"  
+The split value candidates are -0.6, -0.2, 0.2, 0.6
+break of no node splitable
+fitted tree 
+15
+1 1 0.6 3 0
+2 1 0.2 2 1
+4 1 -0.2 1 3
+8 0 0 0 0
+9 0 0 0 0
+5 3 0.2 2 2
+10 0 0 0 0
+11 0 0 0 0
+3 2 0.2 2 4
+6 0 -0.2 1 5
+12 0 0 0 0
+13 0 0 0 0
+7 0 -0.2 1 6
+14 0 0 0 0
+15 0 0 0 0
+
+   user  system elapsed 
+  1.783   0.065   1.781 
+[1] 2.390297e-33
+[1] 0.07635027
+          [,1]
+1  0.715955496
+c1 0.142878162
+c2 0.583188204
+c3 0.286832764
+c4 0.004940705
+c5 0.005664104
+The split value candidates are -0.6, -0.2, 0.2, 0.6
+break of no node splitable
+fitted tree 
+7
+1 1 -0.6 0 0
+2 0 -0.6 0 1
+4 0 0 0 0
+5 0 0 0 0
+3 1 -0.2 1 2
+6 0 0 0 0
+7 0 0 0 0
+
+   user  system elapsed 
+  0.759   0.035   0.776 
+[1] 0.006805508
+[1] 5.930745e-33
+           [,1]
+1  -0.206429362
+c1  0.241677569
+c2  0.482210695
+c3 -0.001045623
+c4  0.026777546
+c5 -0.010168412
+[1] "####### 1/N ########"
+[1] "1/N sdf sr: \n"
+[1] 6.023924
+[1] "weighted sdf sr: \n"
+[1] 6.159004
+[1] "####### 1/N ########"

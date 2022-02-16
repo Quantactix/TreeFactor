@@ -1,0 +1,1 @@
+Rscript main_ts.R > main_ts.out.txt 2>&1

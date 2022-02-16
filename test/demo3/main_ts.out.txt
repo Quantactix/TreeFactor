@@ -1,0 +1,22 @@
+During startup - Warning messages:
+1: Setting LC_COLLATE failed, using "C" 
+2: Setting LC_TIME failed, using "C" 
+3: Setting LC_MESSAGES failed, using "C" 
+4: Setting LC_MONETARY failed, using "C" 
+ [1] "xret" "id"   "date" "mkt"  "m1"   "m2"   "c1"   "c2"   "c3"   "c4"  
+[11] "c5"  
+            [,1]          [,2]         [,3]
+30% -0.005186001 -0.0032160698 -0.004848448
+50%  0.000595892  0.0008176461  0.003226392
+70%  0.005485055  0.0079121311  0.021473389
+The split value candidates are -0.5, 0, 0.5
+break of no good candidate
+fitted tree 
+1
+1 0 0 0 0
+
+[1] 0
+[1] 0
+   user  system elapsed 
+  0.153   0.014   0.180 
+[1] "c1"
