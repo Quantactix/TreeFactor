@@ -5,10 +5,14 @@ This is the public R package for Panel Tree factor model. More details are in th
 
 # How to install **TreeFactor**
 
-- use Mac/Linux command line, go to folder where you store github repos
+- assume Mac/Linux user
+- use command line, go to folder where you store github repos
 - git clone this repo to your machine
 - run `ls` command, you should see **TreeFactor** printed
 - run `R CMD INSTALL TreeFactor`
+
+For windows users, install the package in R session:
+*install.packages("your_directory/TreeFactor", repos = NULL, type = "source")*
 
 # How to start using **TreeFactor**
 
@@ -19,6 +23,8 @@ This is the public R package for Panel Tree factor model. More details are in th
     - run demo2 for market adjusted boosted tree
     - run demo3 for time series split.
 - you can find the printed output in `test/demo` folders.
+
+For windows users, please run each demo in the corresponding folder.
 
 # Reference
 
