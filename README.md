@@ -17,7 +17,7 @@ For windows users, install the package in R session:
 # How to start using **TreeFactor**
 
 - run `cd TreeFactor`
-- run `demo.sh`
+- run `sh demo.sh`
     - simulate R data
     - run demo1 for basic boosted tree
     - run demo2 for market adjusted boosted tree
