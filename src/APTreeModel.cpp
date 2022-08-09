@@ -192,8 +192,7 @@ void APTreeModel::calculate_criterion_APTree_TS(State &state, std::vector<APTree
             }
         }
     }
-    cout << "split criterion " << criterion_values.size() << endl;
-    cout << criterion_values << endl;
+
     // find the lowest split criterion
     size_t lowest_index = 0;
     double temp = criterion_values[0];
@@ -559,12 +558,12 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
         cumu_weight_right = cumu_weight_all - cumu_weight_left;
         num_stocks_right = num_stocks_all - num_stocks_left;
 
-        cout << "some conditions " << endl;
-        cout << (!state.flag_first_cut) << endl;
-        cout << (num_stocks_right.min() < state.min_leaf_size) << endl;
-        cout << (num_stocks_left.min() < state.min_leaf_size) << endl;
-        cout << (arma::accu(num_stocks_right) == 0) << endl;
-        cout << (arma::accu(num_stocks_left) == 0) << endl;
+        // cout << "some conditions " << endl;
+        // cout << (!state.flag_first_cut) << endl;
+        // cout << (num_stocks_right.min() < state.min_leaf_size) << endl;
+        // cout << (num_stocks_left.min() < state.min_leaf_size) << endl;
+        // cout << (arma::accu(num_stocks_right) == 0) << endl;
+        // cout << (arma::accu(num_stocks_left) == 0) << endl;
 
         if ((!state.flag_first_cut) && (num_stocks_right.min() < state.min_leaf_size || num_stocks_left.min() < state.min_leaf_size || arma::accu(num_stocks_right) == 0 || arma::accu(num_stocks_left) == 0))
         {
@@ -644,7 +643,7 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
                     }
                 }
             }
-            cout << "compare " << num_obs_left << " " << loop_index << endl;
+
             size_t num_obs_left = loop_index;
             size_t num_obs_right = state.num_obs_all - num_obs_left;
             size_t num_regressor_cols = this->regressor.n_cols;
@@ -653,8 +652,6 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
             arma::vec Y_right(num_obs_right);
             arma::mat regressor_left(num_obs_left, num_regressor_cols);
             arma::mat regressor_right(num_obs_right, num_regressor_cols);
-
-            cout << this->regressor.n_rows << " " << this->regressor.n_cols << endl;
 
             if (state.weighted_loss)
             {
@@ -878,11 +875,6 @@ void APTreeModel::calculate_factor(APTree &root, arma::vec &leaf_node_index, arm
     mu = arma::trans(mu);
     size_t n_leafs = mu.n_elem;
     arma::mat sigma = arma::cov(all_leaf_portfolio);
-
-    cout << "sigma " << endl;
-    cout << sigma << endl;
-    cout << "------" << endl;
-    cout << mu << endl;
 
     leaf_weight = arma::inv(sigma + state.lambda_cov * arma::eye(n_leafs, n_leafs)) * (mu + state.lambda_mean * arma::ones(mu.n_rows, mu.n_cols));
 
