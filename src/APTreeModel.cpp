@@ -192,7 +192,8 @@ void APTreeModel::calculate_criterion_APTree_TS(State &state, std::vector<APTree
             }
         }
     }
-
+    cout << "split criterion " << criterion_values.size() << endl;
+    cout << criterion_values << endl;
     // find the lowest split criterion
     size_t lowest_index = 0;
     double temp = criterion_values[0];
@@ -312,30 +313,69 @@ void APTreeModel::calculate_criterion_one_variable(State &state, size_t var, std
     // next calculate portfolio returns for current candidate
     for (size_t i = 0; i < state.num_cutpoints; i++)
     {
+        // reset all vectors for a new cutpoint
+        weighted_return_left.fill(0.0);
+        weighted_return_right.fill(0.0);
+        cumu_weight_left.fill(0.0);
+        cumu_weight_right.fill(0.0);
+        num_stocks_left.fill(0.0);
+        num_stocks_right.fill(0.0);
+
+        // cout << "dim of all portfolio " << all_portfolio.n_rows << " " << all_portfolio.n_cols << endl;
+
         // loop over candidates
         cutpoint = state.split_candidates[i];
-        while ((*state.X)((*Xorder)(loop_index, var), var) <= cutpoint)
+
+        // while ((*state.X)((*Xorder)(loop_index, var), var) <= cutpoint)
+        // {
+        //     // the observation is on the left side
+        //     temp_index = (*Xorder)(loop_index, var);              // convert from sorted index (rank) to the original index
+        //     temp_month = (*state.months)(temp_index);             // find corresponding month
+        //     temp_month_index = state.months_list->at(temp_month); // index of the month in the month_list
+        //     // update weighted return, cumulative weight and count of stocks
+        //     weighted_return_left(temp_month_index) += (*state.R)(temp_index) * (*state.weight)(temp_index);
+        //     cumu_weight_left(temp_month_index) += (*state.weight)(temp_index);
+        //     num_stocks_left(temp_month_index) += 1.0;
+        //     loop_index++; // index of the current obs in the original Xorder matrix, will be used in the next round until it reaches total number of obs
+        //     if (loop_index == (*Xorder).n_rows)
+        //     {
+        //         // terminating condition, avoid overflow
+        //         break;
+        //     }
+        // }
+
+        // weighted_return_right = weighted_return_all - weighted_return_left;
+        // cumu_weight_right = cumu_weight_all - weighted_return_left;
+        // num_stocks_right = num_stocks_all - num_stocks_left;
+
+
+        for(size_t jj = 0; jj < (*Xorder).n_rows; jj ++)
         {
-            // the observation is on the left side
-            temp_index = (*Xorder)(loop_index, var);              // convert from sorted index (rank) to the original index
-            temp_month = (*state.months)(temp_index);             // find corresponding month
-            temp_month_index = state.months_list->at(temp_month); // index of the month in the month_list
-            // update weighted return, cumulative weight and count of stocks
-            weighted_return_left(temp_month_index) += (*state.R)(temp_index) * (*state.weight)(temp_index);
-            cumu_weight_left(temp_month_index) += (*state.weight)(temp_index);
-            num_stocks_left(temp_month_index) += 1.0;
-            loop_index++; // index of the current obs in the original Xorder matrix, will be used in the next round until it reaches total number of obs
-            if (loop_index == (*Xorder).n_rows)
+            if ((*state.X)((*Xorder)(jj, var), var) <= cutpoint)
             {
-                // terminating condition, avoid overflow
-                break;
+                temp_index = (*Xorder)(jj, var);                      // convert from sorted index (rank) to the original index
+                temp_month = (*state.months)(temp_index);             // find corresponding month
+                temp_month_index = state.months_list->at(temp_month); // index of the month in the month_list
+                // update weighted return, cumulative weight and count of stocks
+                weighted_return_left(temp_month_index) += (*state.R)(temp_index) * (*state.weight)(temp_index);
+                cumu_weight_left(temp_month_index) += (*state.weight)(temp_index);
+                num_stocks_left(temp_month_index) += 1.0;
+            }
+            else
+            {
+                temp_index = (*Xorder)(jj, var);                      // convert from sorted index (rank) to the original index
+                temp_month = (*state.months)(temp_index);             // find corresponding month
+                temp_month_index = state.months_list->at(temp_month); // index of the month in the month_list
+                // update weighted return, cumulative weight and count of stocks
+                weighted_return_right(temp_month_index) += (*state.R)(temp_index) * (*state.weight)(temp_index);
+                cumu_weight_right(temp_month_index) += (*state.weight)(temp_index);
+                num_stocks_right(temp_month_index) += 1.0;
             }
         }
 
-        // right side is easy, just all minus left
-        weighted_return_right = weighted_return_all - weighted_return_left;
-        cumu_weight_right = cumu_weight_all - cumu_weight_left;
-        num_stocks_right = num_stocks_all - num_stocks_left;
+
+        // cout << " ---- " << endl;
+        // cout << arma::join_rows(num_stocks_all - num_stocks_left - num_stocks_right, weighted_return_all - weighted_return_left - weighted_return_right, cumu_weight_all - cumu_weight_left - cumu_weight_right) << endl;
 
         // check stopping conditions such as minimal leaf size, number of stocks
         if (num_stocks_right.min() < state.min_leaf_size || num_stocks_left.min() < state.min_leaf_size || arma::accu(num_stocks_right) == 0 || arma::accu(num_stocks_left) == 0)
@@ -349,8 +389,8 @@ void APTreeModel::calculate_criterion_one_variable(State &state, size_t var, std
             for (size_t ind = 0; ind < state.num_months; ind++)
             {
                 // calculate weighted return for the candidate left / right child leaves
-                all_portfolio(ind, 0) = (cumu_weight_left(ind) == 0) ? 0 : weighted_return_left(ind) / cumu_weight_left(ind);
-                all_portfolio(ind, 1) = (cumu_weight_right(ind) == 0) ? 0 : weighted_return_right(ind) / cumu_weight_right(ind);
+                all_portfolio(ind, 0) = (num_stocks_left(ind) == 0) ? 0 : weighted_return_left(ind) / cumu_weight_left(ind);
+                all_portfolio(ind, 1) = (num_stocks_right(ind) == 0) ? 0 : weighted_return_right(ind) / cumu_weight_right(ind);
             }
 
             mu = arma::mean(all_portfolio, 0); // 0 for column mean
@@ -358,7 +398,7 @@ void APTreeModel::calculate_criterion_one_variable(State &state, size_t var, std
             sigma = arma::cov(all_portfolio);
 
             size_t n_leafs = mu.n_elem;
-            
+
             // mean variance efficient weight
             weight = arma::inv(sigma + state.lambda_cov * arma::eye(n_leafs, n_leafs)) * (mu + state.lambda_mean * arma::ones(mu.n_rows, mu.n_cols));
 
@@ -473,7 +513,7 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
 
     arma::mat all_portfolio(state.num_months, num_nodes + 1, arma::fill::zeros);
     temp_index = 2; // first two columns for the candidate split
-    
+
     for (size_t i = 0; i < num_nodes; i++)
     {
         if (i != node_ind)
@@ -488,7 +528,13 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
 
     for (size_t i = 0; i < state.num_cutpoints; i++)
     {
-        // cutpoint = state.split_candidates[i];
+        // reset all vectors for a new cutpoint
+        weighted_return_left.fill(0.0);
+        weighted_return_right.fill(0.0);
+        cumu_weight_left.fill(0.0);
+        cumu_weight_right.fill(0.0);
+        num_stocks_left.fill(0.0);
+        num_stocks_right.fill(0.0);
 
         cutpoint = (*state.first_split_mat)(i, var_ind);
 
@@ -512,6 +558,13 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
         weighted_return_right = weighted_return_all - weighted_return_left;
         cumu_weight_right = cumu_weight_all - cumu_weight_left;
         num_stocks_right = num_stocks_all - num_stocks_left;
+
+        cout << "some conditions " << endl;
+        cout << (!state.flag_first_cut) << endl;
+        cout << (num_stocks_right.min() < state.min_leaf_size) << endl;
+        cout << (num_stocks_left.min() < state.min_leaf_size) << endl;
+        cout << (arma::accu(num_stocks_right) == 0) << endl;
+        cout << (arma::accu(num_stocks_left) == 0) << endl;
 
         if ((!state.flag_first_cut) && (num_stocks_right.min() < state.min_leaf_size || num_stocks_left.min() < state.min_leaf_size || arma::accu(num_stocks_right) == 0 || arma::accu(num_stocks_left) == 0))
         {
@@ -601,7 +654,7 @@ void APTreeModel::calculate_criterion_one_variable_APTree_TS(State &state, size_
             arma::mat regressor_left(num_obs_left, num_regressor_cols);
             arma::mat regressor_right(num_obs_right, num_regressor_cols);
 
-            // cout << this->regressor.n_rows << " " << this->regressor.n_cols << endl;
+            cout << this->regressor.n_rows << " " << this->regressor.n_cols << endl;
 
             if (state.weighted_loss)
             {
@@ -825,6 +878,11 @@ void APTreeModel::calculate_factor(APTree &root, arma::vec &leaf_node_index, arm
     mu = arma::trans(mu);
     size_t n_leafs = mu.n_elem;
     arma::mat sigma = arma::cov(all_leaf_portfolio);
+
+    cout << "sigma " << endl;
+    cout << sigma << endl;
+    cout << "------" << endl;
+    cout << mu << endl;
 
     leaf_weight = arma::inv(sigma + state.lambda_cov * arma::eye(n_leafs, n_leafs)) * (mu + state.lambda_mean * arma::ones(mu.n_rows, mu.n_cols));
 
